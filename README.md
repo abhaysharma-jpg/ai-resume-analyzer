@@ -19,7 +19,7 @@ python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 
-## .env file banao
+## create .env file
 GROQ_API_KEY=your-api-key
 
 ## Run
