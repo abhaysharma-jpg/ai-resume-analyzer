@@ -19,7 +19,7 @@ An AI-powered tool that analyzes your resume against a job description and gives
 resume_analyzer/
 ├── app.py                  # Main Flask app
 ├── utils/
-│   ├── ai_analyzer.py      # Claude API integration
+│   ├── ai_analyzer.py      # API integration
 │   ├── pdf_extractor.py    # PDF text extraction
 │   └── validator.py        # Input validation
 ├── templates/
