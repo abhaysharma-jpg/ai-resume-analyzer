@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Resume Analyzer</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="8" fill="#6C63FF"/>
+          <path d="M8 20L12 8L16 16L19 12L22 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>ResumeAI</span>
+      </div>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="hero-badge">✦ Powered by Claude AI</span>
+      <h1>Analyze Your Resume <br/><span class="gradient-text">Against Any Job</span></h1>
+      <p class="hero-sub">Get an ATS score, find missing keywords, and get actionable tips — in seconds.</p>
+    </div>
+  </section>
+
+  <!-- MAIN FORM -->
+  <main class="main-container">
+    <form id="analyzeForm" enctype="multipart/form-data">
+
+      <div class="two-col">
+        <!-- LEFT: Resume -->
+        <div class="form-card">
+          <div class="card-header">
+            <div class="card-icon">📄</div>
+            <div>
+              <h2>Your Resume</h2>
+              <p>Upload PDF or paste text</p>
+            </div>
+          </div>
+
+          <div class="upload-area" id="dropZone">
+            <div class="upload-icon">☁️</div>
+            <p><strong>Drop your PDF here</strong></p>
+            <p class="upload-sub">or <label for="resumeFile" class="upload-link">browse files</label></p>
+            <input type="file" id="resumeFile" name="resume_file" accept=".pdf,.txt" hidden />
+          </div>
+
+          <div id="fileChip" class="file-chip hidden">
+            <span class="file-icon">📎</span>
+            <span id="fileName">file.pdf</span>
+            <button type="button" class="remove-file" onclick="removeFile()">✕</button>
+          </div>
+
+          <div class="divider"><span>or paste text</span></div>
+
+          <textarea
+            name="resume_text"
+            id="resumeText"
+            placeholder="Paste your resume content here…"
+            rows="10"
+          ></textarea>
+        </div>
+
+        <!-- RIGHT: Job Description -->
+        <div class="form-card">
+          <div class="card-header">
+            <div class="card-icon">💼</div>
+            <div>
+              <h2>Job Description</h2>
+              <p>Paste the full JD below</p>
+            </div>
+          </div>
+          <textarea
+            name="job_description"
+            id="jobDesc"
+            placeholder="Paste the job description here…"
+            rows="22"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Error msg -->
+      <div class="error-msg hidden" id="errorMsg">
+        <span>⚠️</span> <span id="errorText"></span>
+      </div>
+
+      <button type="submit" class="analyze-btn" id="analyzeBtn">
+        <span id="btnText">✦ Analyze My Resume</span>
+        <span id="btnLoader" class="loader hidden"></span>
+      </button>
+
+    </form>
+
+    <!-- RESULTS -->
+    <section class="results hidden" id="results">
+
+      <!-- Summary card -->
+      <div class="result-summary-card">
+        <div class="summary-left">
+          <div class="big-score" id="overallScore">—</div>
+          <div class="big-score-label">Overall Match</div>
+          <div class="fit-badge" id="fitBadge">—</div>
+        </div>
+        <div class="summary-right">
+          <p class="summary-text" id="summaryText">—</p>
+          <div class="top-missing" id="topMissing"></div>
+        </div>
+      </div>
+
+      <!-- Score bars -->
+      <div class="scores-grid">
+        <div class="score-item">
+          <div class="score-row-top">
+            <span>Skills Match</span>
+            <span id="skillsVal">—</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill" id="skillsBar"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row-top">
+            <span>Experience Fit</span>
+            <span id="expVal">—</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill" id="expBar"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row-top">
+            <span>Keyword Density</span>
+            <span id="kwVal">—</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill" id="kwBar"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row-top">
+            <span>ATS Friendliness</span>
+            <span id="atsVal">—</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill" id="atsBar"></div></div>
+        </div>
+      </div>
+
+      <!-- Keywords -->
+      <div class="two-col-results">
+        <div class="result-card">
+          <h3 class="result-section-title green">✔ Matched Keywords</h3>
+          <div class="tag-list" id="matchedTags"></div>
+        </div>
+        <div class="result-card">
+          <h3 class="result-section-title red">✗ Missing Keywords</h3>
+          <div class="tag-list" id="missingTags"></div>
+        </div>
+      </div>
+
+      <!-- Strengths & Suggestions -->
+      <div class="two-col-results">
+        <div class="result-card">
+          <h3 class="result-section-title purple">★ Your Strengths</h3>
+          <ul class="result-list" id="strengthsList"></ul>
+        </div>
+        <div class="result-card">
+          <h3 class="result-section-title orange">⚡ Suggestions</h3>
+          <ul class="result-list" id="suggestionsList"></ul>
+        </div>
+      </div>
+
+      <button class="reset-btn" onclick="resetForm()">↺ Analyze Another Resume</button>
+
+    </section>
+
+  </main>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section" id="how">
+    <div class="how-inner">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Upload Resume</h3>
+          <p>Upload your PDF resume or paste plain text.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Paste Job Description</h3>
+          <p>Copy the JD from any job portal and paste it.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Get AI Analysis</h3>
+          <p>Claude AI analyzes and returns your match score instantly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>Built with Flask + Claude AI &nbsp;|&nbsp; Resume Analyzer v1.0</p>
+  </footer>
+
+  <script src="/static/js/main.js"></script>
+</body>
+</html>
