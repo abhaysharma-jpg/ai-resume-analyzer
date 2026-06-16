@@ -7,8 +7,9 @@ An AI-powered tool that analyzes your resume against a job description and gives
 - Actionable improvement tips
 
 ## Tech Stack
+## Tech Stack
 - **Backend**: Python + Flask
-- **AI**: Anthropic Claude API (claude-opus-4-6)
+- **AI**: Groq LLaMA API (llama-3.3-70b-versatile)
 - **PDF Parsing**: PyMuPDF
 - **Frontend**: HTML + CSS + Vanilla JS
 - **Deployment**: Docker + Google Cloud Run
