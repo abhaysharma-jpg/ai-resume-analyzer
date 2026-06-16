@@ -15,8 +15,13 @@ An AI-powered tool that analyzes your resume against a job description.
 - **Frontend**: HTML + CSS + Vanilla JS
 
 ## Setup
-```bash
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
-```
+
+## .env file banao
+GROQ_API_KEY=your-api-key
+
+## Run
+python app.py
+Open http://localhost:5000
